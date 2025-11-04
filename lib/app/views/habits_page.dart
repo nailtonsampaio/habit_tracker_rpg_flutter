@@ -1,4 +1,3 @@
-// lib/app/views/habits_page.dart
 import 'package:flutter/material.dart';
 import '../utils/habit.dart';
 import '../utils/category.dart';
@@ -40,7 +39,7 @@ class HabitsPage extends StatelessWidget {
                 return ListTile(
                   title: Text('${habit.name} (${habit.unitName})'),
                   subtitle: Text(
-                    '${habit.category} - ${habit.weeklyPoints} pts',
+                    '${habit.category} - ${habit.getPointsForDay(DateTime.now())} pts hoje',
                   ),
                   trailing: PopupMenuButton<String>(
                     onSelected: (value) {
@@ -68,10 +67,10 @@ class HabitsPage extends StatelessWidget {
     );
   }
 
-  // Dialogo para adicionar novo hábito
+  // === Adicionar Hábito ===
   void _showAddHabitDialog(BuildContext context) {
     String name = '';
-    String category = categories.first.name;
+    String category = categories.isNotEmpty ? categories.first.name : '';
     String unitName = '';
     int unitPoints = 1;
 
@@ -91,15 +90,32 @@ class HabitsPage extends StatelessWidget {
                 onChanged: (v) => unitName = v,
                 decoration: const InputDecoration(labelText: 'Unidade'),
               ),
-              TextField(
-                onChanged: (v) => unitPoints = int.tryParse(v) ?? 1,
-                decoration: const InputDecoration(
-                  labelText: 'Pontos por unidade',
-                ),
-                keyboardType: TextInputType.number,
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.remove_circle_outline),
+                    onPressed: () {
+                      if (unitPoints > 1) setState(() => unitPoints--);
+                    },
+                  ),
+                  Text(
+                    'Pontos por unidade: $unitPoints',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add_circle_outline),
+                    onPressed: () {
+                      if (unitPoints < 10) setState(() => unitPoints++);
+                    },
+                  ),
+                ],
               ),
+              const SizedBox(height: 10),
               DropdownButton<String>(
-                value: category,
+                value: category.isNotEmpty ? category : null,
+                hint: const Text('Selecione a categoria'),
                 items: categories
                     .map(
                       (c) =>
@@ -108,7 +124,7 @@ class HabitsPage extends StatelessWidget {
                     .toList(),
                 onChanged: (v) {
                   setState(() {
-                    category = v!;
+                    category = v ?? '';
                   });
                 },
               ),
@@ -122,7 +138,7 @@ class HabitsPage extends StatelessWidget {
             TextButton(
               child: const Text('Adicionar'),
               onPressed: () {
-                if (name.isEmpty) return;
+                if (name.isEmpty || category.isEmpty) return;
                 final newHabit = Habit(
                   name: name,
                   category: category,
@@ -139,7 +155,7 @@ class HabitsPage extends StatelessWidget {
     );
   }
 
-  // Dialogo para adicionar unidades
+  // === Adicionar Unidades ===
   void _showAddUnitsDialog(BuildContext context, Habit habit) {
     int units = 1;
     showDialog(
@@ -159,7 +175,7 @@ class HabitsPage extends StatelessWidget {
           TextButton(
             child: const Text('Adicionar'),
             onPressed: () {
-              habit.addUnits(units);
+              habit.addUnits(units, DateTime.now());
               onHabitsChanged([...habits]);
               Navigator.pop(context);
             },
@@ -169,7 +185,7 @@ class HabitsPage extends StatelessWidget {
     );
   }
 
-  // Dialogo para editar qualquer aspecto do hábito
+  // === Editar Hábito ===
   void _showEditHabitDialog(BuildContext context, Habit habit) {
     String name = habit.name;
     String category = habit.category;
@@ -198,15 +214,29 @@ class HabitsPage extends StatelessWidget {
                   hintText: habit.unitName,
                 ),
               ),
-              TextField(
-                onChanged: (v) =>
-                    unitPoints = int.tryParse(v) ?? habit.unitPoints,
-                decoration: InputDecoration(
-                  labelText: 'Pontos por unidade',
-                  hintText: habit.unitPoints.toString(),
-                ),
-                keyboardType: TextInputType.number,
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.remove_circle_outline),
+                    onPressed: () {
+                      if (unitPoints > 1) setState(() => unitPoints--);
+                    },
+                  ),
+                  Text(
+                    'Pontos por unidade: $unitPoints',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add_circle_outline),
+                    onPressed: () {
+                      if (unitPoints < 10) setState(() => unitPoints++);
+                    },
+                  ),
+                ],
               ),
+              const SizedBox(height: 10),
               DropdownButton<String>(
                 value: category,
                 items: categories

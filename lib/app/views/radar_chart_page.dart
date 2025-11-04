@@ -3,12 +3,12 @@ import 'dart:math';
 import '../utils/habit.dart';
 import '../utils/category.dart';
 
-class StatsPage extends StatefulWidget {
+class RadarChartPage extends StatefulWidget {
   final List<Habit> habits;
   final List<Category> categories;
   final Function(List<Category>) onCategoriesChanged;
 
-  const StatsPage({
+  const RadarChartPage({
     super.key,
     required this.habits,
     required this.categories,
@@ -16,10 +16,10 @@ class StatsPage extends StatefulWidget {
   });
 
   @override
-  _StatsPageState createState() => _StatsPageState();
+  _RadarChartPageState createState() => _RadarChartPageState();
 }
 
-class _StatsPageState extends State<StatsPage> {
+class _RadarChartPageState extends State<RadarChartPage> {
   String selectedPeriod = 'Semana';
 
   final List<String> periods = [
@@ -60,9 +60,7 @@ class _StatsPageState extends State<StatsPage> {
     }
   }
 
-  DateTime getEndDate(String period) {
-    return DateTime.now();
-  }
+  DateTime getEndDate(String period) => DateTime.now();
 
   double getTotalPointsForCategory(
     String categoryName,
@@ -92,7 +90,7 @@ class _StatsPageState extends State<StatsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Setores'),
+        title: const Text('Gráfico Poligonal'),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -104,7 +102,7 @@ class _StatsPageState extends State<StatsPage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Seletor de período
+            // Período
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -125,12 +123,10 @@ class _StatsPageState extends State<StatsPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 30),
-
-            // Gráfico Radar
+            const SizedBox(height: 20),
             Center(
               child: CustomPaint(
-                size: const Size(320, 320),
+                size: const Size(300, 300),
                 painter: RadarChartPainter(
                   pointsForRadar,
                   widget.categories,
@@ -209,7 +205,7 @@ class _StatsPageState extends State<StatsPage> {
   }
 }
 
-// === RadarChartPainter limpo (apenas o polígono e labels) ===
+// RadarChartPainter
 class RadarChartPainter extends CustomPainter {
   final Map<String, double> data;
   final List<Category> categories;
@@ -253,12 +249,11 @@ class RadarChartPainter extends CustomPainter {
     canvas.drawPath(path, fillPaint);
     canvas.drawPath(path, strokePaint);
 
-    // Labels
     i = 0;
-    data.forEach((key, _) {
+    data.forEach((key, value) {
       double x = center.dx + (radius + 20) * cos(i * angleStep - pi / 2);
       double y = center.dy + (radius + 20) * sin(i * angleStep - pi / 2);
-      final TextPainter textPainter = TextPainter(
+      final textPainter = TextPainter(
         text: TextSpan(
           text: key,
           style: const TextStyle(fontSize: 12, color: Colors.black),

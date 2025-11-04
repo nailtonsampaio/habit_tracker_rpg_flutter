@@ -8,50 +8,27 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  // Lista de hábitos inicial vazia
-  List<Habit> habits = [];
-
-  // Lista de categorias inicial (5 categorias de exemplo)
-  List<Category> categories = [
-    Category(name: 'Exercício', maxPoints: 100),
-    Category(name: 'Leitura', maxPoints: 50),
-    Category(name: 'Alimentação', maxPoints: 70),
-    Category(name: 'Trabalho', maxPoints: 80),
-    Category(name: 'Lazer', maxPoints: 60),
-  ];
-
-  // Função para atualizar hábitos
-  void updateHabits(List<Habit> updated) {
-    setState(() {
-      habits = updated;
-    });
-  }
-
-  // Função para atualizar categorias
-  void updateCategories(List<Category> updated) {
-    setState(() {
-      categories = updated;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    // Inicialmente vazios
+    final List<Habit> initialHabits = [];
+    final List<Category> initialCategories = [
+      Category(name: 'Exercício', maxPoints: 100),
+      Category(name: 'Leitura', maxPoints: 100),
+      Category(name: 'Alimentação', maxPoints: 100),
+      Category(name: 'Trabalho', maxPoints: 100),
+      Category(name: 'Lazer', maxPoints: 100),
+    ];
+
     return MaterialApp(
       title: 'Habit Tracker',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: HomePage(
-        habits: habits,
-        categories: categories,
-        onHabitsChanged: updateHabits,
-        onCategoriesChanged: updateCategories,
+        initialHabits: initialHabits,
+        initialCategories: initialCategories,
       ),
     );
   }
